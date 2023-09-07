@@ -1,0 +1,40 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block JSscript %}
+    <script src="{%static 'network/dynamic.js'%}" ></script>
+{% endblock JSscript %}
+{% block body %}
+
+{% if is_user_logged %}
+    {% csrf_token %}
+{% endif %}
+        <div id="new-post" class="">
+            <div class="d-flex-row">
+                <h3>New post</h3>
+                <textarea id="new-post-text" class="form-control" rows="3" placeholder="What's on your mind?"></textarea>
+                <button id="new-post-button" class="btn btn-primary">Post</button>
+            </div>
+        </div>
+        <hr>
+        <div id="all-posts" class="container">
+            <h3 class="position-relative">All posts</h3>
+            <template id="post-template">
+                <div class="post shadow border border-primary rounded mb-2 p-2 d-flex flex-column col">
+                    <div class="post_body"></div>
+                    <div class="bottom_info d-flex">
+                        <div class="like d-flex">
+                            <a><div class="like_button"></div></a>
+                            <span class="like_count pl-1"></span>
+                        </div>
+                        <div class="post_info ml-auto font-italic d-flex"></div>
+                    </div>
+                </div>
+            </template>
+        </div>
+        <hr>
+        <div id="nav-bar" class='d-flex'>
+            <nav aria-label="Page navigation" class="mx-auto">
+                <ul class="pagination"></ul>
+            </nav>
+        </div>
+{% endblock %}

@@ -1,0 +1,116 @@
+#all-posts{
+    position: relative;
+}
+@keyframes slide_from_bottom{
+    0%{
+        opacity:0;
+        transform: translateY(100%);
+    }
+    10%{
+        opacity:0;
+        transform: translateY(100%);
+    }
+    100%{
+        opacity:1;
+        transform: translateY(0%);
+    }
+}
+
+#nav-bar{
+    position:sticky;
+    bottom: 0px;
+    background-color: white;
+    animation: slide_from_bottom;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+}
+
+nav{
+    position: sticky;
+    display: flex;
+    bottom: 0px;
+    align-items: center;
+    padding: 10px;
+}
+
+@keyframes hide {
+    0% {
+        opacity:1;
+        height: 100%;
+        line-height: 100%;
+        padding: 5px;
+        margin-bottom: 10px;
+    }
+    85%{
+        opacity:0;
+        height: 100%;
+        line-height: 100%;
+        padding: 5px;
+        margin-bottom: 10px;
+    }
+    100%{
+        opacity:0;
+        height: 0px;
+        line-height: 0px;
+        padding: 0px;
+        margin-bottom: 0px;
+    }
+}
+/* Slide whole block to the left side of the screen untill it disaper */
+@keyframes slide_left_hide{
+    0%{
+        opacity:1;
+        transform: translateX(0%);
+    }
+    100%{
+        opacity:0;
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes slide_left_show{
+    0%{
+        opacity:0;
+        transform: translateX(100%);
+    }
+    100%{
+        opacity:1;
+        transform: translateX(0%);
+    }
+}
+
+.hide_post {
+    position: absolute;
+    z-index: 1;
+    animation-name: slide_left_hide;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
+}
+.show_post {
+    position: relative;
+    z-index: 2;
+    animation-name: slide_left_show;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
+}
+
+@keyframes activate{
+    0%{
+        transform: scale(1);
+    }
+    50%{
+        transform: scale(1.5);
+    }
+    100%{
+        transform: scale(1);
+    }
+}
+
+.bi-heart-fill{
+    color: red;
+    animation: activate;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+}
