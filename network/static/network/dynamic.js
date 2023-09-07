@@ -152,3 +152,40 @@ async function getLoggedInUserInfo(){
         return null;
     }
 }
+
+function makePostFunctionality(){
+    document.querySelector('#new-post-button').addEventListener('click',() => {
+    const text_field = document.querySelector('#new-post-text');
+    console.log(text_field.value);
+    if (text){
+        try{
+            fetch('/make_post', {
+                method: "POST",
+                body: JSON.stringify({
+                    "post_content": text
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log(result);
+                addNewPost(result, result.author);
+            })
+        }
+        catch(error){
+            console.error("Error:", error);
+        }
+    }
+    text_field.value = '';
+    });
+}
+
+
+function addNewPost(post_info){
+    const newPostTemplate = makeDivPost(post_info, post_info.author);
+    const tempDiv = document.createElement('div');
+    tempDiv.append(newPostTemplate);
+    const newPost = tempDiv.firstElementChild;
+    newPost.classList.add('new_post');
+    postContainer = document.querySelector('.post_container');
+    postContainer.prepend(newPost);
+}

@@ -71,9 +71,10 @@ def register(request):
 def make_post(request):
     if request.method == "POST":
         try:
-            body = request.POST.get("body")
+            body = json.loads(request.body)
+            post_content = body.get("post_content")
             author = request.user
-            post = Post.objects.create(body=body, author=author)
+            post = Post.objects.create(body=post_content, author=author)
             return JsonResponse(post.serialize())
         except:
             return JsonResponse({"error": "Post not saved."}, status=400)
@@ -140,3 +141,4 @@ def like_post(request):
             return JsonResponse({"error": "Invalid interaction with like button"}, status=400)
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
+
