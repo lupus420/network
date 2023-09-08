@@ -8,7 +8,7 @@ from django.core.paginator import Paginator
 import json
 from .models import User, Post, Comment, Follow
 
-POSTS_PER_PAGE = 2
+POSTS_PER_PAGE = 4
 
 def index(request):
     return render(request, "network/index.html",{
@@ -75,6 +75,7 @@ def make_post(request):
             post_content = body.get("post_content")
             author = request.user
             post = Post.objects.create(body=post_content, author=author)
+            print("post saved")
             return JsonResponse(post.serialize())
         except:
             return JsonResponse({"error": "Post not saved."}, status=400)
@@ -123,6 +124,9 @@ def pages_count(request):
 
 
 def like_post(request):
+    '''
+    Like or unlike a post.
+    '''
     if request.method == "POST":
         try:
             # get python dictionary from json
@@ -142,3 +146,25 @@ def like_post(request):
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
 
+
+def follow(request):
+    '''
+    Follow or unfollow a user.
+    '''
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            follow_from = data.get("follow_from")
+            follow_to = data.get("follow_to")
+            follow_from_user = User.objects.get(id=follow_from)
+            follow_to_user = User.objects.get(id=follow_to)
+            if follow_to_user in follow_from_user.following.all():
+                follow_from_user.following.remove(follow_to_user)
+                return JsonResponse({"message": "unfollowed"})
+            else:
+                follow_from_user.following.add(follow_to_user)
+                return JsonResponse({"message": "followed"})
+        except:
+            return JsonResponse({"error": "Invalid interaction with follow button"}, status=400)
+    else:
+        JsonResponse({"error": "POST request required."}, status=400)

@@ -2,6 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class Follow(models.Model):
+    # follower follow the followed person
     follower = models.ForeignKey("User", on_delete=models.CASCADE, related_name="followed_by")
     followed = models.ForeignKey("User", on_delete=models.CASCADE, related_name="follower_of")
     date_followed = models.DateTimeField(auto_now_add=True)
@@ -15,14 +16,18 @@ class Follow(models.Model):
 
 
 class User(AbstractUser):
-    following = models.ManyToManyField("self",through=Follow, symmetrical=False, related_name="followees", blank=True)
+    # no need of adding 'following' because the Follow model
+    # already hasa field 'follower' which is a User object
+    # following = models.ManyToManyField("self",through=Follow, symmetrical=False, related_name="followees", blank=True)
 
     def serialize(self):
         return {
             "id": self.id,
             "username": self.username,
-            "following": [user.username for user in self.following.all()],
-            "followers": [user.username for user in self.followees.all()],
+            # people who user follows
+            "following": [user.username for user in self.follower_of.all()],
+            # people who follow user
+            "followers": [user.username for user in self.followed_by.all()],
         }
     
 
@@ -58,11 +63,13 @@ class Post(models.Model):
         else:
             likes_nr = 0
         return {
-            "id": self.id,
-            "body": self.body,
-            "author": self.author.username,
-            "comments": comments,
-            "date_posted": self.date_posted.strftime("%b %d %Y, %I:%M %p"),
-            "likes_nr": likes_nr,
-            "likes": [user.id for user in self.likes.all()],
+            "id":           self.id,
+            "body":         self.body,
+            "author": {
+                "username":     self.author.username,
+                "id":       self.author.id,},
+            "comments":     comments,
+            "date_posted":  self.date_posted.strftime("%b %d %Y, %I:%M %p"),
+            "likes_nr":     likes_nr,
+            "likes":        [user.id for user in self.likes.all()],
         }
