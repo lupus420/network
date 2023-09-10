@@ -1,0 +1,24 @@
+{% extends 'network/layout.html' %}
+{% block body %}
+    <div class="followed_users_list row">
+        <div class="col border border-primary rounded mx-1">
+            {% comment %} Make the h2 centered {% endcomment %}
+            <h2 class="text-center pt-2"`>Following</h2>
+            <hr>
+            <ul>
+                {% for follow in all_follows %}
+                    <li><a href="{% url 'profile' follow.followed %}">{{ follow.followed }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col border border-primary rounded mx-1">
+            <h2 class="text-center pt-2">Followed by</h2>
+            <hr>
+            <ul>
+                {% for follow in all_followed_by %}
+                    <li><a href="{% url 'profile' follow.follower %}">{{ follow.follower }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock body %}

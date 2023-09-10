@@ -1,8 +1,3 @@
-document.addEventListener('DOMContentLoaded', () => {
-    makePagesNavigationBar();
-    getPages();
-});
-
 
 async function getPages(nr_pages) {
     try{
@@ -31,7 +26,9 @@ function makeDivPost(post, logged_user_info){
     const newPost = template.content.cloneNode(true);
     newPost.querySelector('.post').id = `post_${post.id}`;
     newPost.querySelector('.post_body').innerHTML = post.body;
-    newPost.querySelector('.post_info').innerHTML = `Added by ${post.author.username} at ${post.date_posted}`;
+    newPost.querySelector('.post_author').textContent = `${post.author.username}`;
+    newPost.querySelector('.post_author').href = `profile/${post.author.username}`;
+    newPost.querySelector('.post_date').innerHTML = `${post.date_posted}`;
     makeLikeButton(post.likes, newPost.querySelector('.like'), post.id, logged_user_info);
     newPost.querySelector('.like_count').innerHTML = post.likes_nr;
     return newPost;

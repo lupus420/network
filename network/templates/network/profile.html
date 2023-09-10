@@ -1,0 +1,29 @@
+{% extends 'network/layout.html' %}
+{% load static %}
+{% block JSscript %}
+    <script src="{%static 'network/functions.js'%}" ></script>
+    <script src="{%static 'network/profile.js'%}" ></script>
+{% endblock JSscript %}
+{% block body %}
+
+{% if user.is_authenticated %}
+    {% csrf_token %}
+{% endif %}
+    <h2>{{user.username}}</h2>
+    <h3>All posts: </h3>
+    <hr>
+    {% for post in user.posts.all %}
+        <div class="post">
+            <p class="content">{{post.body}}</p>
+            <div class="post-info font-italic">
+                Added by <a href="{% url 'profile' post.author %}"><span class="author">{{post.author}}</span></a>
+                <span class="timestamp">on {{post.date_posted}}</span>
+            </div>
+            <div class="like d-flex" data-post_id={{post.id}}>
+                <a><div class="like_button"></div></a>
+                <span class="like_count pl-1">{{post.like_count}}</span>
+            </div>
+        </div>
+        <hr>
+    {% endfor %}
+{% endblock body %}

@@ -4,6 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+from json import loads
 # from django.views.decorators.csrf import csrf_exempt
 import json
 from .models import User, Post, Comment, Follow
@@ -11,9 +13,7 @@ from .models import User, Post, Comment, Follow
 POSTS_PER_PAGE = 4
 
 def index(request):
-    return render(request, "network/index.html",{
-        "is_user_logged": request.user.is_authenticated
-    })
+    return render(request, "network/index.html")
 
 
 def login_view(request):
@@ -106,6 +106,13 @@ def get_posts(request):
     else:
         return JsonResponse({"error": "GET request required."}, status=400)
 
+def get_post(request):
+    try:
+        post_id = int(request.GET.get('post_id'))
+        post = Post.objects.get(id = post_id)
+        return JsonResponse(post.serialize())
+    except:
+        return JsonResponse({"error": "Bad request."}, status=400)
 
 def get_logged_user(request):
     if request.user.is_authenticated:
@@ -168,3 +175,32 @@ def follow(request):
             return JsonResponse({"error": "Invalid interaction with follow button"}, status=400)
     else:
         JsonResponse({"error": "POST request required."}, status=400)
+
+
+#to get to this view user must be logged in
+@login_required
+def following(request):
+    try:
+        # get all follows where logged in user is the follower
+        all_follows = request.user.following.all()
+        all_followed_by = request.user.followed_by.all()
+        return render(request, "network/following.html",{
+            "all_follows": all_follows,
+            "all_followed_by": all_followed_by,
+        })
+    except:
+        return render(request, "network/following.html",{
+            "error": "Bad request."
+        })
+    
+
+def profile(request, username):
+    try:
+        user = User.objects.get(username=username)
+        return render(request, "network/profile.html", {
+            "user": user,
+        })
+    except:
+        return render(request, "network/profile.html", {
+            "error": "There is no such profile.",
+        })

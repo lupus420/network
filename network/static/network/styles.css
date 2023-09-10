@@ -19,6 +19,7 @@
 #nav-bar{
     position:sticky;
     bottom: 0px;
+    z-index: 2;
     background-color: white;
     animation: slide_from_bottom;
     animation-duration: 1s;
