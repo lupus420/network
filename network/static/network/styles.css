@@ -123,25 +123,25 @@ nav{
     }
     100%{
         opacity: 100%;
-        /* 
-        Setting it to value 'normal' doesn't make a smooth transition
-        from 0% to 100% but a sudden jump. It is because value of a 'normal' line-height
-        is calculated based on the font height and during animation the font-height
-        is changing*/
         line-height: 1.5rem;
     }
 }
 
 .new_post{
-    /* position: fixed;
-    bottom: 0px;
-    right: 0px;
-    margin: 10px;
-    padding: 10px;
-    background-color: white;
-    border-radius: 10px; */
     animation: show_slide;
     animation-duration: 2s;
     animation-fill-mode: forwards;
     animation-play-state: running;
+}
+
+.comment_list {
+    font-size: 0.9rem;
+    font-style: italic;
+    /* font color */
+    color: #656565;
+}
+
+.comment_item {
+    border: solid 1px #7ba7ff;
+    border-radius: 5px;
 }

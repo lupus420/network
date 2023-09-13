@@ -198,9 +198,37 @@ def profile(request, username):
     try:
         user = User.objects.get(username=username)
         return render(request, "network/profile.html", {
-            "user": user,
+            "user_profile": user,
         })
     except:
         return render(request, "network/profile.html", {
             "error": "There is no such profile.",
         })
+    
+
+def get_comments(request):
+    try:
+        post_id = int(request.GET.get('post_id'))
+        post = Post.objects.get(id=post_id)
+        comments = post.get_comments()
+        return JsonResponse(comments, safe=False)
+    except:
+        return JsonResponse({"error": "Bad request."}, status=400)
+    
+
+def make_comment(request):
+    if request.method == "POST":
+        try:
+            body = json.loads(request.body)
+            post_id = int(body.get("post_id"))
+            comment_content = body.get("comment_text")
+            author = request.user
+            post = Post.objects.get(id=post_id)
+            print("post found")
+            comment = Comment.objects.create(body=comment_content, author=author, parent_post=post)
+            print("comment saved")
+            return JsonResponse(comment.serialize())
+        except:
+            return JsonResponse({"error": "Comment not saved."}, status=400)
+    else:
+        return JsonResponse({"error": "POST request required."}, status=400)

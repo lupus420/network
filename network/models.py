@@ -18,14 +18,16 @@ class User(AbstractUser):
 
 class Comment(models.Model):
     body = models.CharField(max_length=500)
+    parent_post = models.ForeignKey("Post", on_delete=models.CASCADE, related_name="comments", blank=True, null=True)
     author = models.ForeignKey("User", on_delete=models.CASCADE, related_name="comments")
     date_posted = models.DateTimeField(auto_now_add=True)
-    likes = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked_comments", blank=True, null=True)
+    likes = models.ManyToManyField(User, related_name="liked_comment", blank=True)
 
     def serialize(self):
         return {
             "id": self.id,
             "body": self.body,
+            "parent_post": self.parent_post.id,
             "author": self.author.username,
             "date_posted": self.date_posted.strftime("%b %d %Y, %I:%M %p"),
             "likes_nr": self.likes.count(),
@@ -35,31 +37,33 @@ class Comment(models.Model):
 class Post(models.Model):
     body = models.CharField(max_length=1000)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
-    comments = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="post_comments", blank=True, null=True)
     date_posted = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, related_name="liked_posts", blank=True)
 
     def like_count(self):
-        return self.likes.count()
+        if self.likes:
+            likes_nr = self.likes.count()
+        else:
+            likes_nr = 0
+        return likes_nr
     
-    def serialize(self):
+    def get_comments(self):
         if self.comments:
             comments = [comment.serialize() for comment in self.comments.all()]
         else:
             comments = None
-        if self.likes:
-            likes_nr = self.like_count()
-        else:
-            likes_nr = 0
+        return comments
+    
+    def serialize(self):
         return {
             "id":           self.id,
             "body":         self.body,
             "author": {
-                "username":     self.author.username,
+                "username": self.author.username,
                 "id":       self.author.id,},
-            "comments":     comments,
+            "comments":     self.get_comments(),
             "date_posted":  self.date_posted.strftime("%b %d %Y, %I:%M %p"),
-            "likes_nr":     likes_nr,
+            "likes_nr":     self.like_count(),
             "likes":        [user.id for user in self.likes.all()],
         }
     

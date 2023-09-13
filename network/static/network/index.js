@@ -1,5 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     makePagesNavigationBar();
-    getPages();
+    await getPages(1);
     makeNewPostFunctionality();
 });

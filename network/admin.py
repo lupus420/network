@@ -12,3 +12,5 @@ admin.site.register(Post)
 admin.site.register(Comment)
 admin.site.register(Follow, FollowAdmin)
 
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ("author", "parent_post", "date_posted", "body")

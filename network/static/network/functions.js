@@ -18,6 +18,8 @@ async function getPages(nr_pages) {
     catch(error){
         console.error('Error:', error);
     }
+    
+    makeCommentsForAllPosts();
 }
 
 
@@ -190,3 +192,71 @@ function addNewPost(post_info){
     postContainer = document.querySelector('.post_container');
     postContainer.prepend(newPost);
 }
+
+
+function makeCommentsForAllPosts(){
+    const post_divs = document.querySelectorAll('.post');
+    post_divs.forEach(post_div => {
+        if(post_div.dataset.loaded != 'true'){
+            makeNewCommentFunctionality(post_div);
+            makeCommentsForPost(post_div);
+            post_div.dataset.loaded = 'true';
+        }
+    })
+}
+
+async function makeCommentsForPost(post_div){
+    const commentDiv = post_div.querySelector('.comment');
+    const comment_list =  await getPostComments(post_div.id.split('_')[1]);
+    comment_list.forEach(comment_info => {
+        displayComment(comment_info, commentDiv);
+    });
+}
+
+// To do - make comment functionality
+function displayComment(comment_info, commentDiv){
+    const template = document.querySelector('#comment-template');
+    newComment = template.content.cloneNode(true);
+    newComment.querySelector('.comment_author').textContent = `${comment_info.author}`;
+    newComment.querySelector('.comment_author').href = `profile/${comment_info.author}`;
+    newComment.querySelector('.comment_date').innerHTML = `${comment_info.date_posted}`;
+    newComment.querySelector('.comment_body').innerHTML = comment_info.body;
+    commentDiv.querySelector('.comment_list').append(newComment);
+}
+
+
+async function getPostComments(post_id){
+    const response = await fetch(`/get_comments?post_id=${post_id}`);
+    const comment_list = await response.json();
+    return comment_list;
+}
+
+async function makeNewCommentFunctionality(post_div){
+    const comment_button = post_div.querySelector('.comment_button');
+    comment_button.addEventListener('click', async () => {
+        const comment_text = post_div.querySelector('.new_comment').value;
+        if (comment_text){
+            csrf_token = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            try{
+                response = await fetch('/make_comment', {
+                    method: "POST", 
+                    body: JSON.stringify({
+                        "post_id": post_div.id.split('_')[1],
+                        "comment_text": comment_text,
+                    }),
+                    headers: {
+                        "X-CSRFToken": csrf_token
+                    }
+                    })
+                comment_info = await response.json();
+                }
+            catch(error){
+                console.error("Error:", error);
+            }
+        }
+        post_div.querySelector('.new_comment').value = '';
+        // Add created comment to the page
+    });
+
+}
+   

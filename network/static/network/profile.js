@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
-
     makeAllLikesDiv();
 });
 
+// In profile.html posts are loaded with the page, so we don't need to get_posts()
+// just need to add the like buttons
 async function makeAllLikesDiv(){
     logged_user_info = await getLoggedInUserInfo();
     document.querySelectorAll('.like').forEach(async likeDiv => {
