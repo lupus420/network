@@ -213,7 +213,7 @@ async function makeCommentsForPost(post_div){
     });
 }
 
-// To do - make comment functionality
+
 function displayComment(comment_info, commentDiv){
     const template = document.querySelector('#comment-template');
     newComment = template.content.cloneNode(true);
@@ -249,14 +249,26 @@ async function makeNewCommentFunctionality(post_div){
                     }
                     })
                 comment_info = await response.json();
+                addCreatedComment(post_div.querySelector('.comment_list'), comment_info);
                 }
             catch(error){
                 console.error("Error:", error);
             }
         }
         post_div.querySelector('.new_comment').value = '';
-        // Add created comment to the page
     });
 
 }
    
+
+function addCreatedComment(comment_list, comment_info){
+    const template = comment_list.querySelector('#comment-template');
+    const new_comment = template.content.cloneNode(true);
+    new_comment.querySelector('.comment_body').innerHTML = comment_info.body;
+    new_comment.querySelector('.comment_author').innerHTML = comment_info.author;
+    new_comment.querySelector('.comment_author').href = `profile/${comment_info.author}`;
+    new_comment.querySelector('.comment_date').innerHTML = comment_info.date_posted;
+    new_comment.querySelector('.comment_item').classList.add('show_post');
+    new_comment.querySelector('.comment_item').style.animationPlayState = 'running';
+    comment_list.append(new_comment);
+}
